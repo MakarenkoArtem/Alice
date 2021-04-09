@@ -1,6 +1,7 @@
 # импортируем библиотеки
 import os
 from flask import Flask, request
+import requests
 import logging
 
 # библиотека, которая нам понадобится для работы с JSON
@@ -29,9 +30,12 @@ logging.basicConfig(level=logging.INFO)
 # Когда он откажется купить слона,
 # то мы уберем одну подсказку. Как будто что-то меняется :)
 sessionStorage = {}
+
+
 @app.route('/')
 def info():
     return "Это мой навык Алисы"
+
 
 @app.route('/post', methods=['POST'])
 # Функция получает тело запроса и возвращает ответ.
@@ -78,6 +82,8 @@ def handle_dialog(req, res):
             ]
         }
         # Заполняем текст ответа
+        # json_response = requests.get('http://127.0.0.1:8080/api/jobs/1')
+        # print(json_response)
         res['response']['text'] = 'Привет! Купи слона!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
@@ -139,4 +145,4 @@ if __name__ == '__main__':
         port = int(os.environ.get("PORT", 5000))
         app.run(host='0.0.0.0', port=port)
     else:
-        app.run()
+        app.run(port=8000)
