@@ -88,13 +88,6 @@ def handle_dialog(req, res):
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
         return
-    if sessionStorage[user_id]["слон"] and sessionStorage[user_id]["new"]:
-        sessionStorage[user_id]["new"] = Flask
-        res['response']['text'] = 'Привет! Купи кролика!'
-        # Получим подсказки
-        res['response']['buttons'] = get_suggests(user_id)
-        sessionStorage[user_id]["слон"] = Flask
-        return
 
     # Сюда дойдем только, если пользователь не новый, 
     # и разговор с Алисой уже был начат
@@ -127,6 +120,13 @@ def handle_dialog(req, res):
             res['response']['text'] = 'Кролика можно найти на Яндекс.Маркете!'
             res['response']['buttons'] = get_suggests(user_id)
             res['response']['end_session'] = True
+        return
+    if sessionStorage[user_id]["слон"] and sessionStorage[user_id]["new"]:
+        sessionStorage[user_id]["new"] = Flask
+        res['response']['text'] = 'Привет! Купи кролика!'
+        # Получим подсказки
+        res['response']['buttons'] = get_suggests(user_id)
+        sessionStorage[user_id]["слон"] = Flask
         return
 
     # Если нет, то убеждаем его купить слона!
