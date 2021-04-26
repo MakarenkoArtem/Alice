@@ -100,6 +100,12 @@ def handle_dialog(res, req):
                     'hide': True
                 }
             ]
+            if user_id in sessionStorage.keys() and 'cities' in sessionStorage[user_id].keys() and 'city_now' in sessionStorage[user_id].keys():
+                s = {}
+                for key, value in sessionStorage[user_id]['cities'].items():
+                    if key != sessionStorage[user_id]['city_now']:
+                        s[key] = value
+                sessionStorage[user_id]['cities'] = s
     # если мы знакомы с пользователем и он нам что-то написал,
     # то это говорит о том, что он уже говорит о городе,
     # что хочет увидеть.
