@@ -3,6 +3,7 @@ import logging
 import json
 import random
 import os
+
 app = Flask(__name__)
 
 logging.basicConfig(level=logging.INFO)
@@ -20,14 +21,16 @@ cities = {
               '997614/3b46c606de4caeebdd48']
 }
 
-
 # создаем словарь, где для каждого пользователя
 # мы будем хранить его имя
 sessionStorage = {}
 
+
 @app.route('/')
 def info():
     return "Это мой 2 навык Алисы"
+
+
 @app.route('/post', methods=['POST'])
 def main():
     print("POST")
@@ -70,7 +73,7 @@ def handle_dialog(res, req):
         # если нашли, то приветствуем пользователя.
         # И спрашиваем какой город он хочет увидеть.
         else:
-            sessionStorage[user_id] = {'first_name': first_name, 'city?': None}
+            sessionStorage[user_id] = {'first_name': first_name, 'cities': None, 'city_now': None, "?": None}
             res['response'][
                 'text'] = 'Приятно познакомиться, ' \
                           + first_name.title() \
@@ -90,24 +93,48 @@ def handle_dialog(res, req):
     # если мы знакомы с пользователем и он нам что-то написал,
     # то это говорит о том, что он уже говорит о городе,
     # что хочет увидеть.
-    else:
-        if sessionStorage[user_id]['city?'] is None:
-            print("*"*50)
-            print(req['request']['original_utterance'].upper())
-        # ищем город в сообщение от пользователя
-        city = get_city(req)
-        # если этот город среди известных нам,
-        # то показываем его (выбираем одну из двух картинок случайно)
-        if city in cities:
-            res['response']['card'] = {}
-            res['response']['card']['type'] = 'BigImage'
-            res['response']['card']['title'] = 'Этот город я знаю.'
-            res['response']['card']['image_id'] = random.choice(cities[city])
-            res['response']['text'] = 'Я угадал!'
-        # если не нашел, то отвечает пользователю
-        # 'Первый раз слышу об этом городе.'
+    elif sessionStorage[user_id]['?'] is None:
+        print("*" * 50)
+        if req['request']['original_utterance'].lower() == "нет":
+            res['response']['text'] = "Пока"
+            res['response']['end_session'] = True
+            sessionStorage[user_id]['cities'] = False
+        elif req['request']['original_utterance'].lower() == "да":
+            if sessionStorage[user_id]['cities'] is None:
+                sessionStorage[user_id]['cities'] = cities
+            sessionStorage[user_id]['?'] = True
         else:
-            res['response']['text'] = 'Первый раз слышу об этом городе. Попробуй еще разок!'
+            res['response']['text'] = "Не поняла ответа! Так да или нет?"
+    elif len(sessionStorage[user_id]['cities']):
+            if sessionStorage[user_id]['city_now'] is not None:
+                if sessionStorage[user_id]['city_now'] == req['request']['original_utterance'].lower():
+                    s = sessionStorage[user_id]['cities'].index(sessionStorage[user_id]['city_now'])
+                    sessionStorage[user_id]['cities'].pop(s)
+                    if len(sessionStorage[user_id]['cities']):
+                        res['response']['text'] = 'Правильно. Сыграем ещё?'
+                    else:
+                        res['response']['text'] = 'Молодец, ты всё отгадал. Пока'
+                        res['response']['end_session'] = True
+                    sessionStorage[user_id]['?'] = None
+                elif len(sessionStorage[user_id]['cities'][sessionStorage[user_id]['city_now']]):
+                    res['response']['card'] = {}
+                    res['response']['card']['type'] = 'BigImage'
+                    res['response']['card']['title'] = 'А так?'
+                    res['response']['card']['image_id'] = sessionStorage[user_id]['cities'][sessionStorage[user_id]['city_now']].pop(0)
+                    res['response']['text'] = ''
+                else:
+                    res['response']['text'] = 'Вы пытались. Это' + sessionStorage[user_id]['city_now'].capitalize() + "Сыграем ещё?"
+                    sessionStorage[user_id]['?'] = None
+            else:
+                city = random.choice(sessionStorage[user_id]['cities'].keys())
+                print("CITY", city)
+                sessionStorage[user_id]['city_now'] = city
+                res['response']['card'] = {}
+                res['response']['card']['type'] = 'BigImage'
+                res['response']['card']['title'] = 'Что это за город?'
+                res['response']['card']['image_id'] = sessionStorage[user_id]['cities'][city].pop(random.randint(0, 2))
+                res['response']['text'] = ''
+
 
 
 def get_city(req):
@@ -129,7 +156,6 @@ def get_first_name(req):
             # то возвращаем ее значение.
             # Во всех остальных случаях возвращаем None.
             return entity['value'].get('first_name', None)
-
 
 
 if __name__ == '__main__':
