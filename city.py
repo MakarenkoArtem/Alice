@@ -46,6 +46,7 @@ def main():
 
 def handle_dialog(res, req):
     user_id = req['session']['user_id']
+    print("USER_ID", user_id)
 
     # если пользователь новый, то просим его представиться.
     if req['session']['new']:
@@ -73,18 +74,22 @@ def handle_dialog(res, req):
             res['response'][
                 'text'] = 'Приятно познакомиться, ' \
                           + first_name.title() \
-                          + '. Я - Алиса. Какой город хочешь увидеть?'
+                          + '. Отгадаешь город по фото?'
             # получаем варианты buttons из ключей нашего словаря cities
             res['response']['buttons'] = [
                 {
-                    'title': city.title(),
+                    'title': "да",
                     'hide': True
-                } for city in cities
+                },
+                {
+                    'title': "нет",
+                    'hide': True
+                }
             ]
     # если мы знакомы с пользователем и он нам что-то написал,
     # то это говорит о том, что он уже говорит о городе,
     # что хочет увидеть.
-    else:
+    elif :
         # ищем город в сообщение от пользователя
         city = get_city(req)
         # если этот город среди известных нам,
