@@ -28,6 +28,7 @@ sessionStorage = {}
 
 @app.route('/post', methods=['POST'])
 def main():
+    print("POST")
     logging.info(f'Request: {request.json!r}')
     response = {
         'session': request.json['session'],
