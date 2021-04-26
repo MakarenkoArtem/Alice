@@ -70,7 +70,7 @@ def handle_dialog(res, req):
         # если нашли, то приветствуем пользователя.
         # И спрашиваем какой город он хочет увидеть.
         else:
-            sessionStorage[user_id] = {'first_name': first_name, 'city?:': None}
+            sessionStorage[user_id] = {'first_name': first_name, 'city?': None}
             res['response'][
                 'text'] = 'Приятно познакомиться, ' \
                           + first_name.title() \
@@ -91,7 +91,7 @@ def handle_dialog(res, req):
     # то это говорит о том, что он уже говорит о городе,
     # что хочет увидеть.
     else:
-        if sessionStorage[user_id]['city'] is None:
+        if sessionStorage[user_id]['city?'] is None:
             print("*"*50)
             print(req['request']['original_utterance'].upper())
         # ищем город в сообщение от пользователя
