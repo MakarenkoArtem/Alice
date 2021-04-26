@@ -2,7 +2,7 @@ from flask import Flask, request
 import logging
 import json
 import random
-
+import os
 app = Flask(__name__)
 
 logging.basicConfig(level=logging.INFO)
@@ -122,5 +122,10 @@ def get_first_name(req):
             return entity['value'].get('first_name', None)
 
 
+
 if __name__ == '__main__':
-    app.run()
+    if 'HEROKU' in os.environ:
+        port = int(os.environ.get("PORT", 5000))
+        app.run(host='0.0.0.0', port=port)
+    else:
+        app.run(port=8000)
