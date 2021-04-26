@@ -112,7 +112,7 @@ def handle_dialog(res, req):
                 print("-"*50)
                 print(sessionStorage[user_id]['cities'])
                 s = {}
-                for value, key in sessionStorage[user_id]['cities'].items():
+                for key, value in sessionStorage[user_id]['cities'].items():
                     print(key, value)
                     if key != sessionStorage[user_id]['city_now']:
                         s[key] = value
