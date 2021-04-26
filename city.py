@@ -113,9 +113,6 @@ def handle_dialog(res, req):
                 sessionStorage[user_id]['cities'].pop(s)
                 if len(sessionStorage[user_id]['cities']):
                     res['response']['text'] = 'Правильно. Сыграем ещё?'
-                else:
-                    res['response']['text'] = 'Молодец, ты всё отгадал. Пока'
-                    res['response']['end_session'] = True
                 sessionStorage[user_id]['?'] = None
             elif len(sessionStorage[user_id]['cities'][sessionStorage[user_id]['city_now']]):
                 res['response']['card'] = {}
@@ -128,7 +125,7 @@ def handle_dialog(res, req):
                 res['response']['text'] = 'Вы пытались. Это' + sessionStorage[user_id][
                     'city_now'].capitalize() + "Сыграем ещё?"
                 sessionStorage[user_id]['?'] = None
-    if len(sessionStorage[user_id]['cities']) and sessionStorage[user_id]['?'] == True:
+    if sessionStorage[user_id]['cities'] is not None and len(sessionStorage[user_id]['cities']) and sessionStorage[user_id]['?'] == True:
         city = random.choice(sessionStorage[user_id]['cities'].keys())
         print("CITY", city)
         sessionStorage[user_id]['city_now'] = city
@@ -138,6 +135,9 @@ def handle_dialog(res, req):
         res['response']['card']['image_id'] = sessionStorage[user_id]['cities'][city].pop(
             random.randint(0, 2))
         res['response']['text'] = ''
+    elif sessionStorage[user_id]['cities'] is not None and not len(sessionStorage[user_id]['cities']):
+        res['response']['text'] = 'Молодец, ты всё отгадал. Пока'
+        res['response']['end_session'] = True
 
 
 def get_city(req):
