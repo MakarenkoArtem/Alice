@@ -55,7 +55,7 @@ def main():
 
 def handle_dialog(res, req):
     user_id = req['session']['user_id']
-    print("USER_ID", user_id)
+    print(sessionStorage)
 
     # если пользователь новый, то просим его представиться.
     if req['session']['new']:
