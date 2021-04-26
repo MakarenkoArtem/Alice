@@ -25,7 +25,9 @@ cities = {
 # мы будем хранить его имя
 sessionStorage = {}
 
-
+@app.route('/')
+def info():
+    return "Это мой 2 навык Алисы"
 @app.route('/post', methods=['POST'])
 def main():
     print("POST")
