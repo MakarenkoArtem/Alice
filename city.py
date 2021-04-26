@@ -99,7 +99,7 @@ def handle_dialog(res, req):
         if req['request']['original_utterance'].lower() == "нет":
             res['response']['text'] = "Пока"
             res['response']['end_session'] = True
-            sessionStorage[user_id]['cities'] = False
+            sessionStorage[user_id]['cities'] = None
         elif req['request']['original_utterance'].lower() == "да":
             if sessionStorage[user_id]['cities'] is None:
                 sessionStorage[user_id]['cities'] = cities
