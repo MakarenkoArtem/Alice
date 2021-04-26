@@ -154,6 +154,10 @@ def handle_dialog(res, req):
                             'hide': True
                         }
                     ]
+                else:
+                    res['response'][
+                        'text'] = f'Правильно, это {sessionStorage[user_id]["city_now"].capitalize()}. Молодец, ты всё отгадал. Пока'
+                    res['response']['end_session'] = True
                 sessionStorage[user_id]['?'] = None
                 sessionStorage[user_id]['city_now'] = None
             elif len(sessionStorage[user_id]['cities'][sessionStorage[user_id]['city_now']]):
@@ -187,11 +191,6 @@ def handle_dialog(res, req):
         res['response']['card']['image_id'] = sessionStorage[user_id]['cities'][
             sessionStorage[user_id]['city_now']].pop(0)
         res['response']['text'] = ''
-    elif sessionStorage[user_id]['cities'] is not None and not len(
-            sessionStorage[user_id]['cities']):
-        res['response'][
-            'text'] = f'Правильно, это {sessionStorage[user_id]["city_now"].capitalize()}. Молодец, ты всё отгадал. Пока'
-        res['response']['end_session'] = True
     res['response']['buttons'].append({'title': "Помощь", 'hide': True})
 
 
