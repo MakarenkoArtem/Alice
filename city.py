@@ -75,7 +75,7 @@ def handle_dialog(res, req):
         res['response'][
             'text'] = "Это игра угадай город, а правила очень просты. Нужно отвечать на мои вопросы. А теперь ответь пожалуйста на прошлый вопрос"
         if user_id in sessionStorage.keys() and 'cities' in sessionStorage[
-            user_id].keys() and 'city_now' in sessionStorage[user_id].keys() and \
+            user_id].keys() and 'city_now' in sessionStorage[user_id].keys() and 
                 sessionStorage[user_id]['cities'] is not None:
             s = {}
             for key, value in sessionStorage[user_id]['cities'].items():
