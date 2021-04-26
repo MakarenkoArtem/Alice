@@ -65,7 +65,7 @@ def handle_dialog(res, req):
             'first_name': None
         }
         return
-
+    res['response']['buttons'] = []
     # если пользователь не новый, то попадаем сюда.
     # если поле имени пустое, то это говорит о том,
     # что пользователь еще не представился.
@@ -157,10 +157,7 @@ def handle_dialog(res, req):
     elif sessionStorage[user_id]['cities'] is not None and not len(sessionStorage[user_id]['cities']):
         res['response']['text'] = f'Правильно, это {sessionStorage[user_id]["city_now"].capitalize()}. Молодец, ты всё отгадал. Пока'
         res['response']['end_session'] = True
-    res['response']['buttons'][-1] = {
-                        'title': "Помощь",
-                        'hide': True
-                    }
+    res['response']['buttons'].append({'title': "Помощь", 'hide': True})
 
 
 def get_city(req):
