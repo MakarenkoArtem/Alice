@@ -109,8 +109,11 @@ def handle_dialog(res, req):
     elif len(sessionStorage[user_id]['cities']):
         if sessionStorage[user_id]['city_now'] is not None:
             if sessionStorage[user_id]['city_now'] == req['request']['original_utterance'].lower():
-                s = sessionStorage[user_id]['cities'].index(sessionStorage[user_id]['city_now'])
-                sessionStorage[user_id]['cities'].pop(s)
+                print("-"*50)
+                print(sessionStorage[user_id]['cities'])
+                sessionStorage[user_id]['cities'] = {key: value for value, key in sessionStorage[user_id]['cities'].items() if key != sessionStorage[user_id]['city_now']}
+                print(sessionStorage[user_id]['cities'])
+                print("-"*50)
                 if len(sessionStorage[user_id]['cities']):
                     res['response']['text'] = 'Правильно. Сыграем ещё?'
                 sessionStorage[user_id]['?'] = None
