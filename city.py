@@ -111,7 +111,12 @@ def handle_dialog(res, req):
             if sessionStorage[user_id]['city_now'] == req['request']['original_utterance'].lower():
                 print("-"*50)
                 print(sessionStorage[user_id]['cities'])
-                sessionStorage[user_id]['cities'] = {key: value for value, key in sessionStorage[user_id]['cities'].items() if key != sessionStorage[user_id]['city_now']}
+                s = {}
+                for value, key in sessionStorage[user_id]['cities'].items():
+                    if key != sessionStorage[user_id]['city_now']:
+                        s[key] = value
+                print(s)
+                sessionStorage[user_id]['cities'] = s
                 print(sessionStorage[user_id]['cities'])
                 print("-"*50)
                 if len(sessionStorage[user_id]['cities']):
