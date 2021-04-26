@@ -86,6 +86,7 @@ def handle_dialog(res, req):
                     'hide': True
                 }
             ]
+            print('sessionStorage', sessionStorage)
     # если мы знакомы с пользователем и он нам что-то написал,
     # то это говорит о том, что он уже говорит о городе,
     # что хочет увидеть.
