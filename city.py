@@ -122,10 +122,16 @@ def handle_dialog(res, req):
         elif fuzz.ratio(req['request']['original_utterance'].lower(), "да") >= 95:
             if sessionStorage[user_id]['cities'] is None:
                 sessionStorage[user_id]['cities'] = cities
+            s = {}
+            for key, value in sessionStorage[user_id]['cities'].items():
+                if len(value):
+                    s[key] = value
+            sessionStorage[user_id]['cities'] = s
+            sessionStorage[user_id]['?'] = True
+            sessionStorage[user_id]['city_now'] = None
         else:
             res['response']['text'] = "Не поняла ответа! Так да или нет?"
             sessionStorage[user_id]['city_now'] = None
-        sessionStorage[user_id]['?'] = True
     elif len(sessionStorage[user_id]['cities']):
         if sessionStorage[user_id]['city_now'] is not None:
             if fuzz.ratio(sessionStorage[user_id]['city_now'],
