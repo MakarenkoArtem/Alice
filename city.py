@@ -74,6 +74,14 @@ def handle_dialog(res, req):
     if fuzz.ratio(req['request']['original_utterance'].lower(), "помощь") >= 90:
         res['response'][
             'text'] = "Это игра угадай город, а правила очень просты. Нужно отвечать на мои вопросы. А теперь ответь пожалуйста на прошлый вопрос"
+        if user_id in sessionStorage.keys() and 'cities' in sessionStorage[
+            user_id].keys() and 'city_now' in sessionStorage[user_id].keys() and \
+                sessionStorage[user_id]['cities'] is not None:
+            s = {}
+            for key, value in sessionStorage[user_id]['cities'].items():
+                if key != sessionStorage[user_id]['city_now']:
+                    s[key] = value
+            sessionStorage[user_id]['cities'] = s
         return
     if sessionStorage[user_id]['first_name'] is None:
         # в последнем его сообщение ищем имя.
@@ -102,14 +110,6 @@ def handle_dialog(res, req):
                     'hide': True
                 }
             ]
-            if user_id in sessionStorage.keys() and 'cities' in sessionStorage[
-                user_id].keys() and 'city_now' in sessionStorage[user_id].keys() and \
-                    sessionStorage[user_id]['cities'] is not None:
-                s = {}
-                for key, value in sessionStorage[user_id]['cities'].items():
-                    if key != sessionStorage[user_id]['city_now']:
-                        s[key] = value
-                sessionStorage[user_id]['cities'] = s
     # если мы знакомы с пользователем и он нам что-то написал,
     # то это говорит о том, что он уже говорит о городе,
     # что хочет увидеть.
