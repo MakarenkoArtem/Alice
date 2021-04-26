@@ -3,6 +3,7 @@ import logging
 import json
 import random
 import os
+
 try:
     from fuzzywuzzy import fuzz
 except ModuleNotFoundError:
@@ -71,7 +72,8 @@ def handle_dialog(res, req):
     # если поле имени пустое, то это говорит о том,
     # что пользователь еще не представился.
     if fuzz.ratio(req['request']['original_utterance'].lower(), "помощь") >= 90:
-        res['response']['text'] = "Это игра угадай город, а правила очень просты. Нужно отвечать на мои вопросы. А теперь ответь пожалуйста на прошлый вопрос"
+        res['response'][
+            'text'] = "Это игра угадай город, а правила очень просты. Нужно отвечать на мои вопросы. А теперь ответь пожалуйста на прошлый вопрос"
         return
     if sessionStorage[user_id]['first_name'] is None:
         # в последнем его сообщение ищем имя.
@@ -100,7 +102,9 @@ def handle_dialog(res, req):
                     'hide': True
                 }
             ]
-            if user_id in sessionStorage.keys() and 'cities' in sessionStorage[user_id].keys() and 'city_now' in sessionStorage[user_id].keys():
+            if user_id in sessionStorage.keys() and 'cities' in sessionStorage[
+                user_id].keys() and 'city_now' in sessionStorage[user_id].keys() and \
+                    sessionStorage[user_id]['cities'] is not None:
                 s = {}
                 for key, value in sessionStorage[user_id]['cities'].items():
                     if key != sessionStorage[user_id]['city_now']:
@@ -122,14 +126,16 @@ def handle_dialog(res, req):
             res['response']['text'] = "Не поняла ответа! Так да или нет?"
     elif len(sessionStorage[user_id]['cities']):
         if sessionStorage[user_id]['city_now'] is not None:
-            if fuzz.ratio(sessionStorage[user_id]['city_now'], req['request']['original_utterance'].lower()) >= 90:
+            if fuzz.ratio(sessionStorage[user_id]['city_now'],
+                          req['request']['original_utterance'].lower()) >= 90:
                 s = {}
                 for key, value in sessionStorage[user_id]['cities'].items():
                     if key != sessionStorage[user_id]['city_now']:
                         s[key] = value
                 sessionStorage[user_id]['cities'] = s
                 if len(sessionStorage[user_id]['cities']):
-                    res['response']['text'] = f'Правильно, это {sessionStorage[user_id]["city_now"].capitalize()}. Сыграем ещё?'
+                    res['response'][
+                        'text'] = f'Правильно, это {sessionStorage[user_id]["city_now"].capitalize()}. Сыграем ещё?'
                     res['response']['buttons'] = [
                         {
                             'title': "да",
@@ -163,16 +169,20 @@ def handle_dialog(res, req):
                     }
                 ]
                 sessionStorage[user_id]['?'] = None
-    if sessionStorage[user_id]['cities'] is not None and len(sessionStorage[user_id]['cities']) and sessionStorage[user_id]['?'] == True and sessionStorage[user_id]['city_now'] is None:
+    if sessionStorage[user_id]['cities'] is not None and len(sessionStorage[user_id]['cities']) and \
+            sessionStorage[user_id]['?'] == True and sessionStorage[user_id]['city_now'] is None:
         city = random.choice(list(sessionStorage[user_id]['cities'].keys()))
         sessionStorage[user_id]['city_now'] = city
         res['response']['card'] = {}
         res['response']['card']['type'] = 'BigImage'
         res['response']['card']['title'] = 'Что это за город?'
-        res['response']['card']['image_id'] = sessionStorage[user_id]['cities'][sessionStorage[user_id]['city_now']].pop(0)
+        res['response']['card']['image_id'] = sessionStorage[user_id]['cities'][
+            sessionStorage[user_id]['city_now']].pop(0)
         res['response']['text'] = ''
-    elif sessionStorage[user_id]['cities'] is not None and not len(sessionStorage[user_id]['cities']):
-        res['response']['text'] = f'Правильно, это {sessionStorage[user_id]["city_now"].capitalize()}. Молодец, ты всё отгадал. Пока'
+    elif sessionStorage[user_id]['cities'] is not None and not len(
+            sessionStorage[user_id]['cities']):
+        res['response'][
+            'text'] = f'Правильно, это {sessionStorage[user_id]["city_now"].capitalize()}. Молодец, ты всё отгадал. Пока'
         res['response']['end_session'] = True
     res['response']['buttons'].append({'title': "Помощь", 'hide': True})
 
