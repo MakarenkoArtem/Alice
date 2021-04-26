@@ -132,6 +132,16 @@ def handle_dialog(res, req):
             else:
                 res['response']['text'] = 'Вы пытались. Это' + sessionStorage[user_id][
                     'city_now'].capitalize() + "Сыграем ещё?"
+                res['response']['buttons'] = [
+                    {
+                        'title': "да",
+                        'hide': True
+                    },
+                    {
+                        'title': "нет",
+                        'hide': True
+                    }
+                ]
                 sessionStorage[user_id]['?'] = None
     if sessionStorage[user_id]['cities'] is not None and len(sessionStorage[user_id]['cities']) and sessionStorage[user_id]['?'] == True and sessionStorage[user_id]['city_now'] is None:
         city = random.choice(list(sessionStorage[user_id]['cities'].keys()))
