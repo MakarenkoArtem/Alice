@@ -66,11 +66,12 @@ def handle_dialog(res, req):
         }
         return
     res['response']['buttons'] = []
+    res['response']['text'] = ''
     # если пользователь не новый, то попадаем сюда.
     # если поле имени пустое, то это говорит о том,
     # что пользователь еще не представился.
     if fuzz.ratio(req['request']['original_utterance'].lower(), "помощь") >= 90:
-        res['response']['text'] = "Это игра угадай город, а правила очень просты. Нужно отвечать на мои вопросы"
+        res['response']['text'] = "Это игра угадай город, а правила очень просты. Нужно отвечать на мои вопросы. А теперь ответь пожалуйста на прошлый вопрос"
         return
     if sessionStorage[user_id]['first_name'] is None:
         # в последнем его сообщение ищем имя.
@@ -123,6 +124,16 @@ def handle_dialog(res, req):
                 sessionStorage[user_id]['cities'] = s
                 if len(sessionStorage[user_id]['cities']):
                     res['response']['text'] = f'Правильно, это {sessionStorage[user_id]["city_now"].capitalize()}. Сыграем ещё?'
+                    res['response']['buttons'] = [
+                        {
+                            'title': "да",
+                            'hide': True
+                        },
+                        {
+                            'title': "нет",
+                            'hide': True
+                        }
+                    ]
                 sessionStorage[user_id]['?'] = None
                 sessionStorage[user_id]['city_now'] = None
             elif len(sessionStorage[user_id]['cities'][sessionStorage[user_id]['city_now']]):
@@ -133,8 +144,8 @@ def handle_dialog(res, req):
                     sessionStorage[user_id]['city_now']].pop(0)
                 res['response']['text'] = ''
             else:
-                res['response']['text'] = 'Вы пытались. Это' + sessionStorage[user_id][
-                    'city_now'].capitalize() + "Сыграем ещё?"
+                res['response']['text'] = 'Вы пытались. Это ' + sessionStorage[user_id][
+                    'city_now'].capitalize() + ". Сыграем ещё?"
                 res['response']['buttons'] = [
                     {
                         'title': "да",
