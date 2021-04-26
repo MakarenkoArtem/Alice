@@ -3,7 +3,13 @@ import logging
 import json
 import random
 import os
+try:
+    from fuzzywuzzy import fuzz
+except ModuleNotFoundError:
+    import pip
 
+    pip.main(["install", "fuzzywuzzy"])
+    from fuzzywuzzy import fuzz
 app = Flask(__name__)
 
 logging.basicConfig(level=logging.INFO)
@@ -90,17 +96,15 @@ def handle_dialog(res, req):
                     'hide': True
                 }
             ]
-            print('sessionStorage', sessionStorage)
     # если мы знакомы с пользователем и он нам что-то написал,
     # то это говорит о том, что он уже говорит о городе,
     # что хочет увидеть.
     elif sessionStorage[user_id]['?'] is None:
-        print("*" * 50)
-        if req['request']['original_utterance'].lower() == "нет":
+        if fuzz.ratio(req['request']['original_utterance'].lower(), "нет") >= 95:
             res['response']['text'] = "Пока"
             res['response']['end_session'] = True
             sessionStorage[user_id]['cities'] = None
-        elif req['request']['original_utterance'].lower() == "да":
+        elif fuzz.ratio(req['request']['original_utterance'].lower(), "да") >= 95:
             if sessionStorage[user_id]['cities'] is None:
                 sessionStorage[user_id]['cities'] = cities
             sessionStorage[user_id]['?'] = True
@@ -108,20 +112,14 @@ def handle_dialog(res, req):
             res['response']['text'] = "Не поняла ответа! Так да или нет?"
     elif len(sessionStorage[user_id]['cities']):
         if sessionStorage[user_id]['city_now'] is not None:
-            if sessionStorage[user_id]['city_now'] == req['request']['original_utterance'].lower():
-                print("-"*50)
-                print(sessionStorage[user_id]['cities'])
+            if fuzz.ratio(sessionStorage[user_id]['city_now'], req['request']['original_utterance'].lower()) >= 90:
                 s = {}
                 for key, value in sessionStorage[user_id]['cities'].items():
-                    print(key, value)
                     if key != sessionStorage[user_id]['city_now']:
                         s[key] = value
-                print(s)
                 sessionStorage[user_id]['cities'] = s
-                print(sessionStorage[user_id]['cities'])
-                print("-"*50)
                 if len(sessionStorage[user_id]['cities']):
-                    res['response']['text'] = 'Правильно. Сыграем ещё?'
+                    res['response']['text'] = f'Правильно, это {sessionStorage[user_id]["city_now"].capitalize()}. Сыграем ещё?'
                 sessionStorage[user_id]['?'] = None
                 sessionStorage[user_id]['city_now'] = None
             elif len(sessionStorage[user_id]['cities'][sessionStorage[user_id]['city_now']]):
@@ -137,7 +135,6 @@ def handle_dialog(res, req):
                 sessionStorage[user_id]['?'] = None
     if sessionStorage[user_id]['cities'] is not None and len(sessionStorage[user_id]['cities']) and sessionStorage[user_id]['?'] == True and sessionStorage[user_id]['city_now'] is None:
         city = random.choice(list(sessionStorage[user_id]['cities'].keys()))
-        print("CITY", city)
         sessionStorage[user_id]['city_now'] = city
         res['response']['card'] = {}
         res['response']['card']['type'] = 'BigImage'
@@ -145,7 +142,7 @@ def handle_dialog(res, req):
         res['response']['card']['image_id'] = sessionStorage[user_id]['cities'][sessionStorage[user_id]['city_now']].pop(0)
         res['response']['text'] = ''
     elif sessionStorage[user_id]['cities'] is not None and not len(sessionStorage[user_id]['cities']):
-        res['response']['text'] = 'Молодец, ты всё отгадал. Пока'
+        res['response']['text'] = f'Правильно, это {sessionStorage[user_id]["city_now"].capitalize()}. Молодец, ты всё отгадал. Пока'
         res['response']['end_session'] = True
 
 
