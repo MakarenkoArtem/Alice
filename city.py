@@ -69,6 +69,9 @@ def handle_dialog(res, req):
     # если пользователь не новый, то попадаем сюда.
     # если поле имени пустое, то это говорит о том,
     # что пользователь еще не представился.
+    if fuzz.ratio(req['request']['original_utterance'].lower(), "помощь") >= 90:
+        res['response']['text'] = "Это игра угадай город, а правила очень просты. Нужно отвечать на мои вопросы"
+        return
     if sessionStorage[user_id]['first_name'] is None:
         # в последнем его сообщение ищем имя.
         first_name = get_first_name(req)
@@ -154,6 +157,10 @@ def handle_dialog(res, req):
     elif sessionStorage[user_id]['cities'] is not None and not len(sessionStorage[user_id]['cities']):
         res['response']['text'] = f'Правильно, это {sessionStorage[user_id]["city_now"].capitalize()}. Молодец, ты всё отгадал. Пока'
         res['response']['end_session'] = True
+    res['response']['buttons'][-1] = {
+                        'title': "Помощь",
+                        'hide': True
+                    }
 
 
 def get_city(req):
